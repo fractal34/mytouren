@@ -342,7 +342,7 @@ async function handleEditRoute(event) {
         const routeData = await response.json();
 
         showRouteCreationFormContent();
-        resetRouteCreationFormContent();
+        
 
         currentEditingRouteId = routeData.id;
         document.getElementById('route-name').value = routeData.routeName.split('_')[0];

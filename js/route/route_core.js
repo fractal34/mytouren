@@ -209,7 +209,7 @@ async function handleCreateOrUpdateRoute() {
                 currentEditingRouteId = null;
                 const routeButton = document.getElementById('routeButton');
                 routeButton.textContent = 'Rota Oluştur';
-                resetRouteCreationFormContent(); // Formu temizle
+                
 
                 // Arayüzü sıfırla ve "oluşturma" moduna dön
                 currentEditingRouteId = null;
@@ -294,9 +294,10 @@ async function handleCreateOrUpdateRoute() {
                 await loadInitialData(); // Tüm verileri yeniden yükle
                 console.log("loadInitialData() tamamlandı.");
 
-                // YENİ: currentEditingRouteId'yi ayarla ve düğme metnini değiştir
-                currentEditingRouteId = detailedRouteData.routeId;
-                routeButton.textContent = 'Rotayı Güncelle';
+                // Yeni rota oluşturulduktan sonra arayüzü sıfırla
+                currentEditingRouteId = null; // Yeni rota oluşturulduğu için düzenleme ID'sini sıfırla
+                routeButton.textContent = 'Rota Oluştur'; // Buton metnini "Oluştur"a geri çevir
+                resetRouteCreationFormContent(); // Formu temizle
 
                 try {
                     // --- HARİTA GÜNCELLEME BAŞLANGIÇ ---
