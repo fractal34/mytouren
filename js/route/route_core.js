@@ -6,6 +6,18 @@ window.handleCreateOrUpdateRoute = async function() {
         item.classList.remove('bg-danger-subtle');
     });
 
+    // YENİ: selectedRouteMarkets'ı UI'daki güncel değerlerle senkronize et
+    document.querySelectorAll('#final-market-list .pallet-input[data-type="totalKg"]').forEach(input => {
+        const marketId = input.dataset.id;
+        const value = parseInt(input.value, 10) || 0;
+        const market = selectedRouteMarkets.find(m => m.id === marketId);
+        if (market) {
+            market.totalKg = value;
+        }
+    });
+    // Diğer palet tipleri için de benzer şekilde güncelleyebilirsiniz,
+    // ancak şu anki sorun sadece totalKg ile ilgili olduğu için sadece onu güncelliyoruz.
+
     // YENİ: Palet Adet/Kilo Tutarlılık Kontrolü
     let validationError = false;
     for (const market of selectedRouteMarkets) {
