@@ -202,7 +202,7 @@ function addEventListeners() {
     document.getElementById('city-search').addEventListener('input', handleCitySearch);
     document.getElementById('market-name-search').addEventListener('input', handleMarketNameSearch);
     document.getElementById('add-selected-markets-button').addEventListener('click', handleAddSelectedMarkets);
-    document.getElementById('routeButton').addEventListener('click', handleCreateOrUpdateRoute);
+    document.getElementById('routeButton').addEventListener('click', window.handleCreateOrUpdateRoute);
 
     // Şoför Yönetimi
     document.getElementById('add-driver-form').addEventListener('submit', handleAddDriver);
