@@ -8,9 +8,7 @@ function showNotification(message, type) {
 
 // --- GÖRÜNÜM YÖNETİMİ (GİRİŞ/KAYIT) ---
 async function loadAuthViews() {
-    loginContainer = document.getElementById('login-container');
-    loginViewWrapper = document.getElementById('login-view-wrapper');
-    appContainer = document.getElementById('app-container');
+    let loginContainer, loginViewWrapper, appContainer, routeButton;
 
     try {
         const loginRes = await fetch('partials/login.html');
@@ -142,6 +140,7 @@ async function initializeApp() {
         appContainer = document.getElementById('app-container');
         appContainer.innerHTML = await response.text();
         appContainer.style.display = 'flex';
+        routeButton = document.getElementById('routeButton'); // Assign the element to the global variable
         addEventListeners(); // Add event listeners after DOM is updated
 
         document.getElementById('route-creation-form-content').classList.add('d-none');
@@ -204,7 +203,7 @@ function addEventListeners() {
     document.getElementById('city-search').addEventListener('input', handleCitySearch);
     document.getElementById('market-name-search').addEventListener('input', handleMarketNameSearch);
     document.getElementById('add-selected-markets-button').addEventListener('click', handleAddSelectedMarkets);
-    document.getElementById('routeButton').addEventListener('click', window.handleCreateOrUpdateRoute);
+    routeButton.addEventListener('click', window.handleCreateOrUpdateRoute);
 
     // Şoför Yönetimi
     document.getElementById('add-driver-form').addEventListener('submit', handleAddDriver);
