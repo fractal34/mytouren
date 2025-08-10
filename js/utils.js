@@ -7,6 +7,7 @@
  * @returns {Promise<Response>} - fetch'ten dönen Response objesi.
  */
 async function fetchWithAuth(url, options = {}) {
+    console.log('fetchWithAuth çağrıldı. Kullanıcı:', user ? user.uid : 'Yok');
     const user = firebase.auth().currentUser;
     if (!user) {
         showNotification('Oturumunuz sonlanmış. Lütfen tekrar giriş yapın.', 'error');
@@ -17,11 +18,13 @@ async function fetchWithAuth(url, options = {}) {
 
     try {
         const token = await user.getIdToken();
+        console.log('Token alındı:', token ? token.substring(0, 10) + '...' : 'Yok');
 
         const headers = {
             ...options.headers,
             'Authorization': `Bearer ${token}`,
         };
+        console.log('Gönderilen Authorization başlığı:', headers.Authorization);
 
         // Body bir FormData nesnesi değilse Content-Type ekle
         if (!(options.body instanceof FormData) && options.body) {
@@ -32,6 +35,7 @@ async function fetchWithAuth(url, options = {}) {
             ...options,
             headers,
         });
+        console.log('API yanıtı:', response.status, 'URL:', url);
 
         if (response.status === 401 || response.status === 403) {
             showNotification('Yetkilendirme hatası. Oturumunuz zaman aşımına uğramış olabilir.', 'error');
@@ -41,6 +45,7 @@ async function fetchWithAuth(url, options = {}) {
         return response;
     } catch (error) {
         console.error('fetchWithAuth hatası:', error);
+        console.error('fetchWithAuth hatası detay:', error.message, error.stack);
         showNotification('Bir ağ hatası oluştu. Lütfen internet bağlantınızı kontrol edin.', 'error');
         throw error;
     }
