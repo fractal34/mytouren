@@ -203,7 +203,13 @@ async function handleCreateOrUpdateRoute() {
                 updateTourPlan(updatedRoute.stops, selectedDriver, selectedRouteMarkets); // updatedRoute.stops kullan
 
                 document.getElementById('distance').textContent = `${updatedRoute.summary.totalDistanceKm.toFixed(2)} km`;
-                document.getElementById('travel-time').textContent = `${updatedRoute.summary.totalTimeHours.toFixed(2)} saat`;
+                                    document.getElementById('travel-time').textContent = `${updatedRoute.summary.totalTimeHours.toFixed(2)} saat`;
+
+                // Arayüzü sıfırla ve "oluşturma" moduna dön
+                currentEditingRouteId = null;
+                const routeButton = document.getElementById('routeButton');
+                routeButton.textContent = 'Rota Oluştur';
+                resetRouteCreationFormContent(); // Formu temizle
 
             } else {
                 showNotification(`Rota güncellenemedi: ${updateData.message || 'Bilinmeyen hata'}`, 'error');
