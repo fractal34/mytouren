@@ -207,14 +207,14 @@ async function handleCreateOrUpdateRoute() {
 
                 // Arayüzü sıfırla ve "oluşturma" moduna dön
                 currentEditingRouteId = null;
-                const routeButton = document.getElementById('routeButton');
-                routeButton.textContent = 'Rota Oluştur';
+                const routeButtonElement = document.getElementById('routeButton');
+                routeButtonElement.textContent = 'Rota Oluştur';
                 
 
                 // Arayüzü sıfırla ve "oluşturma" moduna dön
                 currentEditingRouteId = null;
-                const routeButton = document.getElementById('routeButton');
-                routeButton.textContent = 'Rota Oluştur';
+                const routeButtonElement = document.getElementById('routeButton');
+                routeButtonElement.textContent = 'Rota Oluştur';
                 
 
             } else {
