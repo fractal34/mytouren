@@ -390,6 +390,7 @@ async function fetchConfigAndInitialize() {
 
 async function handleAuthStateChange(user) {
     loginContainer = document.getElementById('login-container');
+    loginViewWrapper = document.getElementById('login-view-wrapper'); // Assign loginViewWrapper here
     appContainer = document.getElementById('app-container');
 
     if (user) {
@@ -403,7 +404,7 @@ async function handleAuthStateChange(user) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}'
                 }
             });
             const data = await response.json();
