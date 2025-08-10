@@ -14,7 +14,7 @@ async function loadAuthViews() {
 
         if (!loginRes.ok) throw new Error('Login view yüklenemedi.');
 
-        loginViewWrapper.innerHTML = await loginRes.text();
+        loginContainer.innerHTML = await loginRes.text(); // Load directly into loginContainer
 
         // Olay dinleyicilerini burada bağla
         document.getElementById('login-button').addEventListener('click', handleLogin);
@@ -244,7 +244,7 @@ function addEventListeners() {
 
 async function handleAuthStateChange(user) {
     loginContainer = document.getElementById('login-container');
-    loginViewWrapper = document.getElementById('login-view-wrapper'); // Assign loginViewWrapper here
+    
     appContainer = document.getElementById('app-container');
 
     if (user) {
