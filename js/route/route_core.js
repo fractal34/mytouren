@@ -205,18 +205,7 @@ window.handleCreateOrUpdateRoute = async function() {
                 const selectedDriver = allDrivers.find(d => d.id === document.getElementById('driver-select').value);
                 updateTourPlan(updatedRoute.stops, selectedDriver, selectedRouteMarkets); // updatedRoute.stops kullan
 
-                document.getElementById('distance').textContent = `${updatedRoute.summary.totalDistanceKm.toFixed(2)} km`;
-                                    document.getElementById('travel-time').textContent = `${updatedRoute.summary.totalTimeHours.toFixed(2)} saat`;
-
-                // Arayüzü sıfırla ve "oluşturma" moduna dön
-                currentEditingRouteId = null;
-                routeButtonElement.textContent = 'Rota Oluştur';
                 
-
-                // Arayüzü sıfırla ve "oluşturma" moduna dön
-                currentEditingRouteId = null;
-                const routeButtonElement = document.getElementById('routeButton');
-                routeButtonElement.textContent = 'Rota Oluştur';
                 
 
             } else {
@@ -394,5 +383,3 @@ window.handleCreateOrUpdateRoute = async function() {
         document.getElementById('preloader').style.display = 'none';
     }
 }
-
-

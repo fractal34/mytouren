@@ -312,7 +312,7 @@ async function handleDeleteRoute(event) {
 
     if (confirm('Bu rotayı kalıcı olarak silmek istediğinizden emin misiniz?')) {
         try {
-            const response = await fetch(`/api/routing/routes/${routeId}`, { method: 'DELETE' });
+            const response = await fetchWithAuth(`/api/routing/routes/${routeId}`, { method: 'DELETE' });
             if (!response.ok) {
                 throw new Error('Rota silinemedi.');
             }
