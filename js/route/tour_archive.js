@@ -394,9 +394,8 @@ async function handleEditRoute(event) {
 
         const routeButton = document.getElementById('routeButton');
         routeButton.textContent = 'Rotayı Güncelle';
-        // Event listener'ı DEĞİŞTİRMİYORUZ. Ana listener (handleCreateOrUpdateRoute)
-        // zaten currentEditingRouteId'nin dolu olup olmadığını kontrol ederek
-        // "create" ve "update" modları arasında ayrım yapabiliyor.
+        routeButton.removeEventListener('click', handleCreateOrUpdateRoute);
+        routeButton.addEventListener('click', handleUpdateRoute);
 
     } catch (error) {
         showNotification(error.message, 'error');
