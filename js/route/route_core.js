@@ -38,7 +38,7 @@ window.handleCreateOrUpdateRoute = async function() {
     }
 
     // YENİ: Palet Adet/Kilo Tutarlılık Kontrolü (Her market için)
-    let validationError = false;
+    validationError = false;
     for (const market of selectedRouteMarkets) {
         const hasNoLoad = (market.euroPallets === 0 && market.widePallets === 0 && market.totalKg === 0);
         if (hasNoLoad) {
