@@ -320,7 +320,7 @@ window.handleCreateOrUpdateRoute = async function() {
 
                 // Yeni rota oluşturulduktan sonra arayüzü sıfırla
                 currentEditingRouteId = detailedRouteData.routeId; // Yeni oluşturulan rotanın ID'sini ayarla
-                routeButton.textContent = 'Rotayı Güncelle'; // Buton metnini "Rotayı Güncelle" olarak değiştir
+                document.getElementById('routeButton').textContent = 'Rotayı Güncelle'; // Buton metnini "Rotayı Güncelle" olarak değiştir
 
                 try {
                     // --- HARİTA GÜNCELLEME BAŞLANGIÇ ---
