@@ -319,9 +319,8 @@ window.handleCreateOrUpdateRoute = async function() {
                 console.log("loadInitialData() tamamlandı.");
 
                 // Yeni rota oluşturulduktan sonra arayüzü sıfırla
-                currentEditingRouteId = null; // Yeni rota oluşturulduğu için düzenleme ID'sini sıfırla
-                routeButton.textContent = 'Rota Oluştur'; // Buton metnini "Oluştur"a geri çevir
-                resetRouteCreationFormContent(); // Formu temizle
+                currentEditingRouteId = detailedRouteData.routeId; // Yeni oluşturulan rotanın ID'sini ayarla
+                routeButton.textContent = 'Rotayı Güncelle'; // Buton metnini "Rotayı Güncelle" olarak değiştir
 
                 try {
                     // --- HARİTA GÜNCELLEME BAŞLANGIÇ ---
