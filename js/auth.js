@@ -18,7 +18,6 @@ async function loadAuthViews() {
 
         // Olay dinleyicilerini burada bağla
         document.getElementById('login-button').addEventListener('click', handleLogin);
-        document.getElementById('show-register-link').addEventListener('click', showRegisterView);
 
     } catch (error) {
         console.error('Kimlik doğrulama görünümleri yüklenirken hata:', error);
@@ -33,7 +32,6 @@ async function showLoginView(e) {
         if (!loginRes.ok) throw new Error('Login view yüklenemedi.');
         loginViewWrapper.innerHTML = await loginRes.text();
         document.getElementById('login-button').addEventListener('click', handleLogin);
-        document.getElementById('show-register-link').addEventListener('click', showRegisterView);
     } catch (error) {
         console.error('Giriş görünümü yüklenirken hata:', error);
         loginViewWrapper.innerHTML = '<p class="text-danger text-center">Giriş bölümü yüklenemedi. Lütfen sayfayı yenileyin.</p>';
@@ -42,16 +40,8 @@ async function showLoginView(e) {
 
 async function showRegisterView(e) {
     e.preventDefault();
-    try {
-        const registerRes = await fetch('partials/register.html');
-        if (!registerRes.ok) throw new Error('Register view yüklenemedi.');
-        loginViewWrapper.innerHTML = await registerRes.text();
-        document.getElementById('register-form').addEventListener('submit', handleRegister);
-        document.getElementById('show-login-link').addEventListener('click', showLoginView);
-    } catch (error) {
-        console.error('Kayıt görünümü yüklenirken hata:', error);
-        loginViewWrapper.innerHTML = '<p class="text-danger text-center">Kayıt bölümü yüklenemedi. Lütfen sayfayı yenileyin.</p>';
-    }
+    console.log("Kayıt olma özelliği devre dışı bırakıldı. Giriş sayfasına yönlendiriliyor.");
+    showLoginView(); // Kayıt olma özelliğini devre dışı bırak ve giriş sayfasına yönlendir
 }
 
 async function handleRegister(e) {
