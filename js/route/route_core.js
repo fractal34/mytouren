@@ -211,6 +211,12 @@ async function handleCreateOrUpdateRoute() {
                 routeButton.textContent = 'Rota Oluştur';
                 resetRouteCreationFormContent(); // Formu temizle
 
+                // Arayüzü sıfırla ve "oluşturma" moduna dön
+                currentEditingRouteId = null;
+                const routeButton = document.getElementById('routeButton');
+                routeButton.textContent = 'Rota Oluştur';
+                
+
             } else {
                 showNotification(`Rota güncellenemedi: ${updateData.message || 'Bilinmeyen hata'}`, 'error');
             }
