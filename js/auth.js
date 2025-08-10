@@ -135,10 +135,13 @@ async function initializeApp() {
         document.getElementById('route-creation-form-content').classList.add('d-none');
         document.getElementById('initial-route-view').classList.remove('d-none');
 
-        const settingsResponse = await fetch('partials/settings.html');
-        if (!settingsResponse.ok) throw new Error('Settings view yüklenemedi.');
-
-        document.getElementById('pane-controls').insertAdjacentHTML('beforeend', await settingsResponse.text());
+        const paneControls = document.getElementById('pane-controls');
+        // Check if settings view is already loaded to prevent duplicate IDs
+        if (!paneControls.querySelector('#settings-view')) {
+            const settingsResponse = await fetch('partials/settings.html');
+            if (!settingsResponse.ok) throw new Error('Settings view yüklenemedi.');
+            paneControls.insertAdjacentHTML('beforeend', await settingsResponse.text());
+        }
 
         Split(['#pane-controls', '#pane-map', '#pane-pallets'], {
             sizes: [20, 50, 30],
