@@ -8,7 +8,6 @@ function showNotification(message, type) {
 
 // --- GÖRÜNÜM YÖNETİMİ (GİRİŞ/KAYIT) ---
 async function loadAuthViews() {
-    let loginContainer, loginViewWrapper, appContainer, routeButton;
 
     try {
         const loginRes = await fetch('partials/login.html');
