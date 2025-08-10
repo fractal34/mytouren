@@ -142,6 +142,7 @@ async function initializeApp() {
         appContainer = document.getElementById('app-container');
         appContainer.innerHTML = await response.text();
         appContainer.style.display = 'flex';
+        addEventListeners(); // Add event listeners after DOM is updated
 
         document.getElementById('route-creation-form-content').classList.add('d-none');
         document.getElementById('initial-route-view').classList.remove('d-none');
@@ -411,11 +412,7 @@ async function handleAuthStateChange(user) {
             await initializeApp();
             document.getElementById('welcome-message').textContent = `Hoş geldiniz, ${data.user.name}`;
             
-            // NİHAİ DÜZELTME: Olay dinleyicilerini, tarayıcının DOM'u tamamen işlemesine izin vermek için
-            // bir sonraki "tick"te çalışacak şekilde setTimeout içine al.
-            setTimeout(() => {
-                addEventListeners();
-            }, 0);
+            
 
         } catch (error) {
             console.error("Oturum doğrulama hatası:", error);

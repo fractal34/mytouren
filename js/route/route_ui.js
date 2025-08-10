@@ -259,8 +259,7 @@ function resetRouteCreationFormContent() {
 
     const routeButton = document.getElementById('routeButton');
     routeButton.textContent = 'Rota Oluştur';
-    routeButton.removeEventListener('click', handleCreateOrUpdateRoute);
-    routeButton.removeEventListener('click', handleCreateOrUpdateRoute);
+    
 
     currentEditingRouteId = null;
     showNotification('Yeni rota oluşturma paneli hazır.', 'info');
