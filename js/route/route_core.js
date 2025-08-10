@@ -99,6 +99,7 @@ window.handleCreateOrUpdateRoute = async function() {
 
     // Eğer currentEditingRouteId varsa, güncelleme işlemi yap
     if (currentEditingRouteId) {
+        console.log('Güncelleme bloğu başladı. currentEditingRouteId:', currentEditingRouteId);
         try {
             const routeToUpdate = {
                 routeName: finalRouteName,
@@ -118,6 +119,7 @@ window.handleCreateOrUpdateRoute = async function() {
                 })),
             };
 
+            console.log('Güncellenecek rota verisi:', routeToUpdate);
             const updateResponse = await fetchWithAuth(`http://localhost:3000/api/routing/routes/${currentEditingRouteId}`, {
                 method: 'PUT',
                 headers: {
@@ -127,6 +129,7 @@ window.handleCreateOrUpdateRoute = async function() {
             });
 
             const updateData = await updateResponse.json();
+            console.log('Sunucu yanıtı - OK:', updateResponse.ok, 'Status:', updateResponse.status);
 
             if (updateResponse.ok) {
                 showNotification('Rota başarıyla güncellendi!', 'success');
@@ -217,6 +220,7 @@ window.handleCreateOrUpdateRoute = async function() {
                 
 
             } else {
+                console.error('Güncelleme başarısız, sunucu yanıtı:', updateData);
                 showNotification(`Rota güncellenemedi: ${updateData.message || 'Bilinmeyen hata'}`, 'error');
             }
         } catch (error) {
