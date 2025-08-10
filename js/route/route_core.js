@@ -422,7 +422,7 @@ async function handleUpdateRoute() {
     };
 
     try {
-        const response = await fetch(`http://localhost:3000/api/routing/routes/${currentEditingRouteId}`, {
+        const response = await fetchWithAuth(`http://localhost:3000/api/routing/routes/${currentEditingRouteId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updatedRouteData)
