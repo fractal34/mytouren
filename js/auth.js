@@ -244,6 +244,7 @@ function addEventListeners() {
 
 async function handleAuthStateChange(user) {
     loginContainer = document.getElementById('login-container');
+    loginViewWrapper = document.getElementById('login-view-wrapper'); // Assign loginViewWrapper here
     appContainer = document.getElementById('app-container');
 
     if (user) {
