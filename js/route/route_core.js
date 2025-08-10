@@ -1,6 +1,6 @@
 // --- ROTA OLUŞTURMA VE GÜNCELLEME ÇEKİRDEK FONKSİYONLARI ---
 
-async function handleCreateOrUpdateRoute() {
+window.handleCreateOrUpdateRoute = async function() {
     // Önceki hatalı market vurgularını temizle
     document.querySelectorAll('#final-market-list .list-group-item').forEach(item => {
         item.classList.remove('bg-danger-subtle');
@@ -207,7 +207,6 @@ async function handleCreateOrUpdateRoute() {
 
                 // Arayüzü sıfırla ve "oluşturma" moduna dön
                 currentEditingRouteId = null;
-                const routeButtonElement = document.getElementById('routeButton');
                 routeButtonElement.textContent = 'Rota Oluştur';
                 
 
