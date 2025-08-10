@@ -40,7 +40,7 @@ window.handleCreateOrUpdateRoute = async function() {
     // YENİ: Palet Adet/Kilo Tutarlılık Kontrolü (Her market için)
     validationError = false;
     for (const market of selectedRouteMarkets) {
-        const hasNoLoad = (market.euroPallets === 0 && market.widePallets === 0 && market.totalKg === 0);
+        const hasNoLoad = (market.totalKg === 0); // Sadece Toplam Kg kontrolü
         if (hasNoLoad) {
             validationError = true;
             // Hatalı marketi arayüzde vurgula
@@ -52,7 +52,7 @@ window.handleCreateOrUpdateRoute = async function() {
     }
 
     if (validationError) {
-        showNotification('Lütfen tüm seçili marketler için palet veya kilo bilgisi girin. Yük bilgisi olmayan marketler var (kırmızı ile işaretlendi).', 'error');
+        showNotification('Lütfen tüm seçili marketler için Toplam Kg bilgisi girin. Toplam Kg sıfır olan marketler var (kırmızı ile işaretlendi).', 'error');
         document.getElementById('preloader').style.display = 'none';
         return; // Rota oluşturmayı durdur
     }
