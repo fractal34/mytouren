@@ -170,6 +170,7 @@ async function initializeApp() {
         );
         const behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
         ui = H.ui.UI.createDefault(map, defaultLayers);
+        if (map) map.getViewPort().resize(); // Ensure map resizes after initialization and container is visible
 
         await loadInitialData();
         // addEventListeners çağrısı buradan kaldırıldı

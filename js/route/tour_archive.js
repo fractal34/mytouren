@@ -437,7 +437,8 @@ function showArchiveMainView() {
 
 // Klavye olay dinleyicisi
 document.addEventListener('keydown', (event) => {
-    if (document.getElementById('tourPreviewModal').classList.contains('show')) { // Modal açıksa
+    const tourPreviewModal = document.getElementById('tourPreviewModal');
+    if (tourPreviewModal && tourPreviewModal.classList.contains('show')) { // Modal açıksa ve mevcutsa
         if (event.key === 'ArrowLeft') {
             navigateToTour(-1); // Önceki tur (ters sıralama nedeniyle)
         } else if (event.key === 'ArrowRight') {
