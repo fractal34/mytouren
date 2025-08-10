@@ -7,8 +7,8 @@
  * @returns {Promise<Response>} - fetch'ten dönen Response objesi.
  */
 async function fetchWithAuth(url, options = {}) {
-    console.log('fetchWithAuth çağrıldı. Kullanıcı:', user ? user.uid : 'Yok');
     const user = firebase.auth().currentUser;
+    console.log('fetchWithAuth çağrıldı. Kullanıcı:', user ? user.uid : 'Yok');
     if (!user) {
         showNotification('Oturumunuz sonlanmış. Lütfen tekrar giriş yapın.', 'error');
         // İsteğe bağlı: kullanıcıyı giriş sayfasına yönlendir
