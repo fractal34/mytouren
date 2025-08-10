@@ -1,0 +1,28 @@
+# Dependencies - Proje bağımlılıkları
+/node_modules
+
+# Sensitive Information - Hassas Bilgiler
+# API anahtarları, veritabanı şifreleri gibi gizli bilgileri içerir.
+.env
+/json/serviceAccountKey.json
+
+# User Requested Ignores - Kullanıcının Belirttiği Dosyalar
+/ekler/
+GEMINI.md
+
+# Local Data & Artifacts - Yerel Veri ve Kalıntılar
+# Kodun parçası olmayan, yerel geliştirme veya test için kullanılan dosyalar.
+driver_update.json
+/-p/
+
+# OS generated files - İşletim Sistemi Tarafından Oluşturulan Dosyalar
+.DS_Store
+desktop.ini
+Thumbs.db
+
+# Log files - Log Dosyaları
+*.log
+
+# IDE configuration - Geliştirme Ortamı Ayar Dosyaları
+.vscode/
+.idea/
