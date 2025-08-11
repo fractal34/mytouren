@@ -84,7 +84,7 @@
         <div class="d-grid mt-4">
             <button id="routeButton" class="btn btn-primary btn-lg"><i class="bi bi-geo-alt-fill"></i> Rota Oluştur</button>
         </div>
-        <div id="notification" class="alert mt-3" style="display: none;"></div>
+        
         <div id="info-panel" class="card bg-dark text-white mt-4 p-3">
             <h5 class="card-title border-bottom pb-2">Yük ve Rota Bilgileri</h5>
             <p class="mb-1"><strong>Toplam Palet Sayısı:</strong> <span id="total-pallets">0</span></p>
@@ -141,13 +141,37 @@
             <button id="back-to-main-button" class="btn btn-sm btn-outline-secondary">Geri Dön</button>
         </div>
         <form id="add-driver-form">
+            <input type="hidden" id="editing-driver-id">
             <h6>Yeni Şoför Ekle</h6>
             <div class="mb-2"><input type="text" id="driver-name" class="form-control" placeholder="Şoför Adı" required></div>
             <div class="mb-2"><input type="text" id="driver-plate" class="form-control" placeholder="Kamyon Plakası" required></div>
-            <div class="mb-2"><input type="number" id="driver-max-pallets" class="form-control" value="34" min="0" required placeholder="Maks. Palet Ağırlığı (kg)"></div>
-            <div class="mb-2"><input type="number" id="driver-pallet-capacity" class="form-control" value="20" min="0" required placeholder="Palet Kapasitesi (Yuva)"></div>
+            <div class="mb-2"><input type="number" id="driver-max-tonnage" class="form-control" min="0" placeholder="Maksimum Tonaj (kg)"></div>
+            <div class="mb-2"><input type="number" id="driver-pallet-capacity" class="form-control" min="0" placeholder="Palet Kapasitesi (Yuva)"></div>
             <div class="mb-2"><input type="text" id="driver-fixed-start" class="form-control" placeholder="Sabit Çıkış Adresi" required></div>
             <div class="mb-2"><input type="text" id="driver-fixed-end" class="form-control" placeholder="Sabit Varış Adresi" required></div>
+            <p class="text-muted mt-3 mb-2">Şoför uygulama kullanacaksa lütfen oturum bilgilerini belirleyin. Burayı daha sonra da doldurabilirsiniz.</p>
+            <div class="mb-2"><input type="email" id="driver-email" class="form-control" placeholder="Şoförün E-posta Adresi"></div>
+            <div class="mb-2"><input type="password" id="driver-password" class="form-control" placeholder="Şoförün Şifresi"></div>
+            
+            <!-- New Password Change Section -->
+            <div class="d-grid mt-3 mb-2">
+                <button type="button" id="show-password-change-section-button" class="btn btn-outline-secondary btn-sm">Şifreyi Değiştir</button>
+            </div>
+            <div id="password-change-section" class="card card-body bg-light mb-3 d-none">
+                <h6>Şifre Değiştir</h6>
+                <div class="mb-2">
+                    <input type="password" id="new-driver-password" class="form-control" placeholder="Yeni Şifre">
+                </div>
+                <div class="mb-2">
+                    <input type="password" id="confirm-new-driver-password" class="form-control" placeholder="Yeni Şifreyi Onayla">
+                </div>
+                <div class="d-grid">
+                    <button type="button" id="save-new-driver-password-button" class="btn btn-primary btn-sm">Şifreyi Kaydet</button>
+                </div>
+                <p id="password-change-error" class="text-danger mt-2"></p>
+            </div>
+            <!-- End New Password Change Section -->
+
             <div class="d-grid"><button type="submit" class="btn btn-success">Şoför Ekle</button></div>
         </form>
         <hr>

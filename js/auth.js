@@ -18,6 +18,11 @@ async function loadAuthViews() {
 
         // Olay dinleyicilerini burada bağla
         document.getElementById('login-button').addEventListener('click', handleLogin);
+        // Add event listener for forgot password link
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+        if (forgotPasswordLink) {
+            forgotPasswordLink.addEventListener('click', handleForgotPassword);
+        }
 
     } catch (error) {
         console.error('Kimlik doğrulama görünümleri yüklenirken hata:', error);
@@ -112,6 +117,27 @@ async function handleLogin() {
     }
 }
 
+async function handleForgotPassword() {
+    const email = document.getElementById('login-email').value;
+    const loginError = document.getElementById('login-error');
+    loginError.textContent = ''; // Clear previous errors
+
+    if (!email) {
+        loginError.textContent = 'Lütfen e-posta adresinizi girin.';
+        return;
+    }
+
+    try {
+        await firebase.auth().sendPasswordResetEmail(email);
+        loginError.textContent = 'Şifre sıfırlama e-postası gönderildi. Gelen kutunuzu kontrol edin.';
+        loginError.className = 'text-success mt-3 text-center'; // Change to success style
+    } catch (error) {
+        loginError.textContent = `Şifre sıfırlama hatası: ${error.message}`;
+        loginError.className = 'text-danger mt-3 text-center'; // Keep error style
+        console.error('Şifre sıfırlama hatası:', error);
+    }
+}
+
 function handleLogout() {
     firebase.auth().signOut().then(() => {
         window.location.reload();
@@ -199,6 +225,20 @@ function addEventListeners() {
 
     // Şoför Yönetimi
     document.getElementById('add-driver-form').addEventListener('submit', handleAddDriver);
+    // New: Password change section buttons
+    const showPasswordChangeButton = document.getElementById('show-password-change-section-button');
+    if (showPasswordChangeButton) {
+        showPasswordChangeButton.addEventListener('click', () => {
+            const passwordChangeSection = document.getElementById('password-change-section');
+            if (passwordChangeSection) {
+                passwordChangeSection.classList.toggle('d-none');
+            }
+        });
+    }
+    const saveNewPasswordButton = document.getElementById('save-new-driver-password-button');
+    if (saveNewPasswordButton) {
+        saveNewPasswordButton.addEventListener('click', handleSaveNewDriverPassword);
+    }
     
 
     // Market Yönetimi

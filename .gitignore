@@ -5,10 +5,12 @@
 # API anahtarları, veritabanı şifreleri gibi gizli bilgileri içerir.
 .env
 /json/serviceAccountKey.json
+rota1-d40e4-firebase-adminsdk-fbsvc-85b551fde2.json
 
 # User Requested Ignores - Kullanıcının Belirttiği Dosyalar
 /ekler/
 GEMINI.md
+create_user_cli.js
 
 # Local Data & Artifacts - Yerel Veri ve Kalıntılar
 # Kodun parçası olmayan, yerel geliştirme veya test için kullanılan dosyalar.

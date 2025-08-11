@@ -26,6 +26,7 @@ function renderDriverList(drivers) {
 function resetDriverForm() {
     const form = document.getElementById('add-driver-form');
     form.reset();
+    document.getElementById('editing-driver-id').value = ''; // Gizli ID alanını temizle
     form.querySelector('h6').textContent = 'Yeni Şoför Ekle';
     form.querySelector('button[type="submit"]').textContent = 'Şoför Ekle';
     form.querySelector('button[type="submit"]').classList.replace('btn-primary', 'btn-success');
@@ -42,12 +43,26 @@ function handleEditDriver(event) {
 
 function populateDriverForm(driver) {
     const form = document.getElementById('add-driver-form');
+    document.getElementById('editing-driver-id').value = driver.id; // Gizli ID alanını doldur
     form.querySelector('#driver-name').value = driver.name;
     form.querySelector('#driver-plate').value = driver.licensePlate;
-    form.querySelector('#driver-max-pallets').value = driver.maxPallets;
+    form.querySelector('#driver-max-tonnage').value = driver.maxTonnage || ''; // Changed ID and added default empty
     form.querySelector('#driver-pallet-capacity').value = driver.palletCapacity || '';
     form.querySelector('#driver-fixed-start').value = driver.fixedStart.address;
     form.querySelector('#driver-fixed-end').value = driver.fixedEnd.address;
+
+    // Populate email and password fields if they exist (for editing existing drivers with accounts)
+    form.querySelector('#driver-email').value = driver.email || '';
+    form.querySelector('#driver-password').value = ''; // Never pre-fill password for security
+
+    // Hide password change section when populating form for editing
+    const passwordChangeSection = document.getElementById('password-change-section');
+    if (passwordChangeSection) {
+        passwordChangeSection.classList.add('d-none');
+        document.getElementById('new-driver-password').value = ''; // Clear new password fields
+        document.getElementById('confirm-new-driver-password').value = '';
+        document.getElementById('password-change-error').textContent = ''; // Clear any error messages
+    }
 
     form.querySelector('h6').textContent = 'Şoför Düzenle';
     const submitButton = form.querySelector('button[type="submit"]');
@@ -58,14 +73,25 @@ function populateDriverForm(driver) {
 
 async function handleAddDriver(event) {
     event.preventDefault();
+    const driverEmail = document.getElementById('driver-email').value;
+    const driverPassword = document.getElementById('driver-password').value;
+
     const driverData = {
         name: document.getElementById('driver-name').value,
         licensePlate: document.getElementById('driver-plate').value,
-        maxPallets: document.getElementById('driver-max-pallets').value,
+        maxTonnage: document.getElementById('driver-max-tonnage').value, // Changed ID
         palletCapacity: document.getElementById('driver-pallet-capacity').value,
         fixedStartAddress: document.getElementById('driver-fixed-start').value,
         fixedEndAddress: document.getElementById('driver-fixed-end').value
     };
+
+    // Only include email and password if they are provided
+    if (driverEmail && driverPassword) {
+        driverData.email = driverEmail;
+        driverData.password = driverPassword;
+    }
+
+    console.log('Sending driverData:', driverData); // Added for debugging
 
     try {
         const response = await fetchWithAuth('/api/drivers', {
@@ -78,6 +104,7 @@ async function handleAddDriver(event) {
         showNotification('Şoför başarıyla eklendi!', 'success');
         document.getElementById('add-driver-form').reset();
         await loadInitialData(); // Verileri ve listeyi yenile
+        showDriverManagementView(); // Şoför listesini güncellemek için görünümü yeniden çiz
     } catch (error) {
         showNotification(error.message, 'error');
     }
@@ -104,6 +131,73 @@ function showDriverManagementView() {
     renderDriverList(allDrivers); // Mevcut yüklenmiş verilerle listeyi çiz
 }
 
+async function handleSaveNewDriverPassword() {
+    const newPasswordInput = document.getElementById('new-driver-password');
+    const confirmNewPasswordInput = document.getElementById('confirm-new-driver-password');
+    const passwordChangeError = document.getElementById('password-change-error');
+    const driverId = document.getElementById('editing-driver-id').value; // ID'yi gizli alandan oku
+
+    passwordChangeError.textContent = ''; // Clear previous errors
+
+    if (!driverId) {
+        passwordChangeError.textContent = 'Şoför seçimi bulunamadı. Lütfen sayfayı yenileyip tekrar deneyin.';
+        console.error('Hata: Şifre kaydedilmeye çalışıldı ancak editing-driver-id boş.');
+        return;
+    }
+
+    const newPassword = newPasswordInput.value;
+    const confirmNewPassword = confirmNewPasswordInput.value;
+
+    if (!newPassword || !confirmNewPassword) {
+        passwordChangeError.textContent = 'Lütfen yeni şifreyi ve onayını girin.';
+        return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+        passwordChangeError.textContent = 'Yeni şifreler eşleşmiyor.';
+        return;
+    }
+
+    if (newPassword.length < 6) { // Firebase minimum password length
+        passwordChangeError.textContent = 'Şifre en az 6 karakter olmalıdır.';
+        return;
+    }
+
+    try {
+        const response = await fetchWithAuth(`/api/drivers/${driverId}/credentials`, { // Değişkeni burada kullan
+            method: 'PUT',
+            body: JSON.stringify({ password: newPassword })
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || 'Şifre güncellenemedi.');
+        }
+
+        // Başarı mesajını global bildirim yerine yerel olarak göster
+        const passwordChangeElement = document.getElementById('password-change-error');
+        passwordChangeElement.textContent = 'Şifre başarıyla güncellendi!';
+        passwordChangeElement.classList.remove('text-danger');
+        passwordChangeElement.classList.add('text-success');
+
+        newPasswordInput.value = '';
+        confirmNewPasswordInput.value = '';
+
+        // Bölümü ve mesajı bir süre sonra gizle
+        setTimeout(() => {
+            document.getElementById('password-change-section').classList.add('d-none');
+            passwordChangeElement.textContent = '';
+            // Hata stili sınıfını gelecekteki hatalar için sıfırla
+            passwordChangeElement.classList.remove('text-success');
+            passwordChangeElement.classList.add('text-danger');
+        }, 2500); // 2.5 saniye sonra gizle
+
+    } catch (error) {
+        passwordChangeError.textContent = `Şifre güncellenirken hata: ${error.message}`;
+        console.error('Şifre güncelleme hatası:', error);
+    }
+}
+
 // YENİ FONKSİYON: Şoför seçimi değiştiğinde tetiklenir
 function handleDriverSelectionChange(event) {
     const driverId = event.target.value;
@@ -124,7 +218,7 @@ function handleDriverSelectionChange(event) {
 
     if (selectedDriver) {
         // Tonaj ve Palet Kapasitesini Güncelle (Hem eski `maxWeight` hem de yeni `maxPallets` ile uyumlu)
-        weightInput.value = selectedDriver.maxPallets || selectedDriver.maxWeight || 0;
+        weightInput.value = selectedDriver.maxTonnage || selectedDriver.maxWeight || 0; // Changed to maxTonnage
         palletCapacityInput.value = selectedDriver.palletCapacity || 0;
 
         // Başlangıç ve Bitiş Noktalarını Güncelle
