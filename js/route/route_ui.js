@@ -183,6 +183,10 @@ function updateTotals() {
     }, { euroPallets: 0, widePallets: 0, totalKg: 0 });
 
     const totalWeight = totals.totalKg;
+
+    const totalPallets = totals.euroPallets + totals.widePallets;
+    const totalPalletsEl = document.getElementById('total-pallets');
+    totalPalletsEl.textContent = totalPallets;
     
     const totalWeightEl = document.getElementById('total-weight');
     totalWeightEl.textContent = totalWeight.toLocaleString();

@@ -1,6 +1,15 @@
 // --- ROTA OLUŞTURMA VE GÜNCELLEME ÇEKİRDEK FONKSİYONLARI ---
 
 window.handleCreateOrUpdateRoute = async function() {
+    // --- KAPASİTE AŞIM KONTROLÜ (DEBUG) ---
+    const totalWeightText = (document.getElementById('total-weight').textContent || '0').replace(/\D/g, '');
+    const totalWeight = parseInt(totalWeightText, 10) || 0;
+    const totalPallets = parseInt(document.getElementById('total-pallets').textContent, 10) || 0;
+    const truckMaxWeight = parseInt(document.getElementById('weight').value, 10) || 0;
+    const truckMaxPallets = parseInt(document.getElementById('truck-pallet-capacity').value, 10) || 0;
+
+    // --- KONTROL SONU ---
+
     // Önceki hatalı market vurgularını temizle
     document.querySelectorAll('#final-market-list .list-group-item').forEach(item => {
         item.classList.remove('bg-danger-subtle');
