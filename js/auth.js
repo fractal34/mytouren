@@ -60,7 +60,7 @@ async function handleRegister(e) {
         await userCredential.user.updateProfile({ displayName: name });
 
         const token = await userCredential.user.getIdToken();
-        const response = await fetch('http://localhost:3000/api/auth/create-profile', {
+        const response = await fetch('/api/auth/create-profile', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ async function handleLogin() {
         const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
         const token = await userCredential.user.getIdToken();
 
-        const response = await fetch('http://localhost:3000/api/auth/verify-token', {
+        const response = await fetch('/api/auth/verify-token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -288,7 +288,7 @@ async function handleAuthStateChange(user) {
         try {
             const token = await user.getIdToken();
             // DÜZELTME: Bu çağrı standart fetch olmalı ve token'ı header'da göndermeli
-            const response = await fetch('http://localhost:3000/api/auth/verify-token', {
+            const response = await fetch('/api/auth/verify-token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -357,7 +357,7 @@ async function handleSaveSettings() {
         }
 
         const token = await user.getIdToken();
-        const response = await fetch('http://localhost:3000/api/auth/update-profile', {
+        const response = await fetch('/api/auth/update-profile', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -421,44 +421,6 @@ async function fetchConfigAndInitialize() {
     }
 }
 
-async function handleAuthStateChange(user) {
-    loginContainer = document.getElementById('login-container');
-    loginViewWrapper = document.getElementById('login-view-wrapper'); // Assign loginViewWrapper here
-    appContainer = document.getElementById('app-container');
 
-    if (user) {
-        console.log("Oturum aktif, uygulama başlatılıyor...");
-        loginContainer.style.display = 'none';
-        appContainer.style.display = 'flex';
-        
-        try {
-            const token = await user.getIdToken();
-            const response = await fetch('http://localhost:3000/api/auth/verify-token', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message || 'Oturum doğrulaması başarısız.');
-
-            await initializeApp();
-            document.getElementById('welcome-message').textContent = `Hoş geldiniz, ${data.user.name}`;
-            
-            
-
-        } catch (error) {
-            console.error("Oturum doğrulama hatası:", error);
-            handleLogout(); 
-        }
-
-    } else {
-        console.log("Oturum yok, giriş ekranı gösteriliyor...");
-        loginContainer.style.display = 'flex';
-        appContainer.style.display = 'none';
-        loadAuthViews();
-    }
-}
 
 document.addEventListener('DOMContentLoaded', fetchConfigAndInitialize);
