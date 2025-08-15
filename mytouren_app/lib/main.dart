@@ -40,6 +40,7 @@ class AuthWrapper extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         debugPrint('[AuthWrapper] ConnectionState: ${snapshot.connectionState}, HasData: ${snapshot.hasData}');
+        debugPrint('[AuthWrapper] Building: ${snapshot.hasData ? "DriverMainScreen" : "LoginScreen"}');
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(

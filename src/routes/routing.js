@@ -495,15 +495,20 @@ router.put('/routes/:id', authMiddleware, async (req, res) => {
                 polylines: routePolyline,
                 summary: hereRoute.sections.map(s => s.summary)
             },
-            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            updatedAt: new Date().toISOString()
         };
 
         console.log("Updating route with ID:", req.params.id);
         await db.collection('kayitli_rotalar').doc(req.params.id).update(updatedRoute);
 
+        // DÜZELTME: Yanıt göndermeden önce güncellenmiş veriyi veritabanından tekrar çek.
+        // Bu, serverTimestamp'ın çözümlenmiş halini almamızı sağlar.
+        const docAfterUpdate = await routeRef.get();
+        const finalUpdatedRoute = { id: docAfterUpdate.id, ...docAfterUpdate.data() };
+
         res.status(200).json({ 
             message: 'Rota başarıyla güncellendi.', 
-            updatedRoute: { id: req.params.id, ...updatedRoute } // Güncellenmiş rotayı geri döndür
+            updatedRoute: finalUpdatedRoute // Veritabanından alınan en güncel veriyi gönder
         });
     } catch (error) {
         console.error(`Rota güncellenirken hata:`, error);
@@ -546,7 +551,7 @@ router.put('/routes/:id/sequence', async (req, res) => {
         // Rotanın sadece 'stops' ve 'updatedAt' alanlarını güncelle
         await routeRef.update({
             stops: stops,
-            updatedAt: new Date().toISOString()
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
         res.status(200).json({ message: 'Rota sıralaması başarıyla güncellendi.' });
@@ -554,6 +559,90 @@ router.put('/routes/:id/sequence', async (req, res) => {
     } catch (error) {
         console.error("Rota sıralaması güncellenirken hata:", error);
         res.status(500).json({ message: 'Sıralama güncellenemedi.', error: error.message });
+    }
+});
+
+// YENİ: Bir turu bir şoföre ata
+router.post('/assign-tour', authMiddleware, async (req, res) => {
+    const { routeId, driverId, assignmentDate } = req.body;
+    const ownerId = req.user.uid;
+
+    if (!routeId || !driverId || !assignmentDate) {
+        return res.status(400).json({ message: 'Rota ID, Şoför ID ve Atama Tarihi zorunludur.' });
+    }
+
+    try {
+        const routeRef = db.collection('kayitli_rotalar').doc(routeId);
+        const doc = await routeRef.get();
+
+        if (!doc.exists || doc.data().ownerId !== ownerId) {
+            return res.status(404).json({ message: 'Rota bulunamadı veya bu işlem için yetkiniz yok.' });
+        }
+
+        // Frontend'den gelen "dd.mm.yyyy" formatındaki tarihi ayrıştır
+        const dateParts = assignmentDate.split('.');
+        if (dateParts.length !== 3) {
+            return res.status(400).json({ message: 'Geçersiz tarih formatı. Lütfen gg.aa.yyyy formatını kullanın.' });
+        }
+        const day = parseInt(dateParts[0], 10);
+        const month = parseInt(dateParts[1], 10) - 1; // Ay 0-bazlıdır
+        const year = parseInt(dateParts[2], 10);
+        const parsedDate = new Date(Date.UTC(year, month, day));
+
+        if (isNaN(parsedDate.getTime())) {
+             return res.status(400).json({ message: 'Geçersiz tarih değeri.' });
+        }
+
+        await routeRef.update({
+            driverId: driverId,
+            assignmentDate: parsedDate.toISOString(), // ISO 8601 formatında kaydet
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        res.status(200).json({ success: true, message: 'Tur başarıyla atandı.' });
+
+    } catch (error) {
+        console.error("Tur atama sırasında hata:", error);
+        res.status(500).json({ message: 'Sunucuda bir hata oluştu, tur atanamadı.', error: error.message });
+    }
+});
+
+// YENİ: Mobil uygulama için sürücünün bugünkü turlarını getir
+router.get('/driver-tours', authMiddleware, async (req, res) => {
+    try {
+        const firebaseAuthUid = req.user.uid;
+
+        // 1. Adım: FirebaseAuthUid kullanarak sürücünün doküman ID'sini bul
+        const driversRef = db.collection('drivers');
+        const driverSnapshot = await driversRef.where('firebaseAuthUid', '==', firebaseAuthUid).limit(1).get();
+
+        if (driverSnapshot.empty) {
+            return res.status(404).json({ message: "Sürücü bulunamadı." });
+        }
+        const driverDocId = driverSnapshot.docs[0].id;
+
+        // 2. Adım: Sürücünün bugünkü atanmış turlarını bul
+        const now = new Date();
+        const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
+        const endOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
+
+        const routesRef = db.collection('kayitli_rotalar');
+        const tourSnapshot = await routesRef
+            .where('driverId', '==', driverDocId)
+            .where('assignmentDate', '>=', startOfDay.toISOString())
+            .where('assignmentDate', '<=', endOfDay.toISOString())
+            .get();
+
+        if (tourSnapshot.empty) {
+            return res.status(200).json([]); // Boş dizi döndür, hata değil
+        }
+
+        const tours = tourSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        res.status(200).json(tours);
+
+    } catch (error) {
+        console.error("Sürücü turları alınırken hata:", error);
+        res.status(500).json({ message: "Sunucu hatası: Sürücü turları alınamadı.", error: error.message });
     }
 });
 

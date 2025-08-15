@@ -170,10 +170,35 @@ window.handleCreateOrUpdateRoute = async function() {
             });
 
             const updateData = await updateResponse.json();
+            console.log('GÜNCELLEME YANITI:', JSON.stringify(updateData, null, 2)); // DEBUG: Sunucudan gelen yanıtı logla
             console.log('Sunucu yanıtı - OK:', updateResponse.ok, 'Status:', updateResponse.status);
 
             if (updateResponse.ok) {
                 showNotification('Rota başarıyla güncellendi!', 'success');
+
+                // YENİ: Liste görünümünü anında güncellemek için allRoutes dizisini manuel olarak güncelle
+                const updatedRouteIndex = allRoutes.findIndex(r => r.id === currentEditingRouteId);
+                if (updatedRouteIndex !== -1) {
+                    const routeFromServer = updateData.updatedRoute;
+
+                    // Tarihleri Date nesnesine çevir
+                    if (routeFromServer.assignmentDate) {
+                        routeFromServer.assignmentDate = new Date(routeFromServer.assignmentDate);
+                    }
+                    if (routeFromServer.createdAt) {
+                        routeFromServer.createdAt = new Date(routeFromServer.createdAt);
+                    }
+                    // FİNAL DÜZELTME: Sunucudan gelen Firestore Timestamp nesnesini doğru şekilde işle
+                    if (routeFromServer.updatedAt && routeFromServer.updatedAt._seconds) {
+                        routeFromServer.updatedAt = new Date(routeFromServer.updatedAt._seconds * 1000);
+                    } else {
+                        // Fallback - eğer updatedAt gelmezse, şimdiki zamanı kullan
+                        routeFromServer.updatedAt = new Date();
+                    }
+                    
+                    allRoutes[updatedRouteIndex] = routeFromServer;
+                }
+
                 await renderSavedRoutes(); // LİSTEYİ YENİLE
 
                 // YENİ: Harita ve Tur Planı güncellemeleri

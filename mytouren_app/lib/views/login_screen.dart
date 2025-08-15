@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text('MyTouren - Giriş'),
+        title: const Text('MyTouren - Giriş', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color(0xFF212529), // Dark navbar color
       ),
       body: Center(
@@ -108,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: double.infinity,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFB22222), // MyTouren red
+                              backgroundColor: const Color(0xFF5d8abc),
                               padding: const EdgeInsets.symmetric(vertical: 16.0),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
@@ -117,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: _login,
                             child: const Text(
                               'Giriş Yap',
-                              style: TextStyle(fontSize: 16),
+                              style: TextStyle(fontSize: 16, color: Colors.white),
                             ),
                           ),
                         ),

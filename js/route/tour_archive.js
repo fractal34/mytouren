@@ -24,11 +24,14 @@ function showTourArchiveView() {
 
             if (!selectedDate) return;
 
+            // Saat dilimi sorunlarını önlemek için UTC tarihlerini karşılaştır
+            const startOfSelectedDay = new Date(Date.UTC(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate()));
+
             const filteredRoutes = allRoutes.filter(route => {
-                const routeDate = new Date(route.createdAt);
-                return routeDate.getFullYear() === selectedDate.getFullYear() &&
-                       routeDate.getMonth() === selectedDate.getMonth() &&
-                       routeDate.getDate() === selectedDate.getDate();
+                if (!route.createdAt) return false;
+                const routeDate = new Date(route.createdAt); // createdAt zaten bir Date nesnesi olmalı
+                const startOfRouteDay = new Date(Date.UTC(routeDate.getFullYear(), routeDate.getMonth(), routeDate.getDate()));
+                return startOfRouteDay.getTime() === startOfSelectedDay.getTime();
             });
             
             currentFilteredRoutes = filteredRoutes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Tarihe göre sırala
@@ -141,7 +144,16 @@ async function showRouteInPreview(routeId) {
             location.reload();
         };
 
-        currentPreviewRouteId = routeId;
+        // Set currentEditingRoute and currentEditingRouteId for the assign tour modal
+        currentEditingRouteId = routeId;
+        currentEditingRoute = routeData; // Assuming routeData contains the full route object
+
+        // Add event listener for the new "Assign Tour" button in the preview modal
+        document.getElementById('assign-preview-tour-button').onclick = () => {
+            tourPreviewModal.hide(); // Hide the preview modal before showing the assign tour modal
+            showAssignTourModal();
+        };
+
         currentPreviewRouteIndex = currentFilteredRoutes.findIndex(r => r.id === routeId);
         updatePreviewNavigationButtons();
 
@@ -230,29 +242,33 @@ function renderSavedRoutes() {
     yesterdayList.innerHTML = '';
 
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
     const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
 
     const todayRoutes = allRoutes.filter(route => {
+        if (!route.createdAt) return false;
         const routeDate = new Date(route.createdAt);
-        return routeDate >= today;
+        const createdDay = new Date(Date.UTC(routeDate.getFullYear(), routeDate.getMonth(), routeDate.getDate()));
+        return createdDay.getTime() === today.getTime();
     });
 
     const yesterdayRoutes = allRoutes.filter(route => {
+        if (!route.createdAt) return false;
         const routeDate = new Date(route.createdAt);
-        return routeDate >= yesterday && routeDate < today;
+        const createdDay = new Date(Date.UTC(routeDate.getFullYear(), routeDate.getMonth(), routeDate.getDate()));
+        return createdDay.getTime() === yesterday.getTime();
     });
 
     if (todayRoutes.length === 0) {
-        todayList.innerHTML = '<p class="text-muted text-center">Bugün için kayıtlı tur bulunmamaktadır.</p>';
+        todayList.innerHTML = '<p class="text-muted text-center">Bugün oluşturulmuş tur bulunmamaktadır.</p>';
     }
-    todayRoutes.forEach(route => todayList.appendChild(createRouteListItem(route, false)));
+    todayRoutes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(route => todayList.appendChild(createRouteListItem(route, false)));
 
     if (yesterdayRoutes.length === 0) {
-        yesterdayList.innerHTML = '<p class="text-muted text-center">Dün için kayıtlı tur bulunmamaktadır.</p>';
+        yesterdayList.innerHTML = '<p class="text-muted text-center">Dün oluşturulmuş tur bulunmamaktadır.</p>';
     }
-    yesterdayRoutes.forEach(route => yesterdayList.appendChild(createRouteListItem(route, false)));
+    yesterdayRoutes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(route => yesterdayList.appendChild(createRouteListItem(route, false)));
 }
 
 function createRouteListItem(route, includeHashtags = true) {
@@ -264,33 +280,32 @@ function createRouteListItem(route, includeHashtags = true) {
         hashtagsHtml = route.cityHashtags.map(tag => `<span class="badge bg-secondary me-1 hashtag-badge" style="cursor: pointer;">${tag}</span>`).join('');
     }
 
-    const createdAtDate = new Date(route.createdAt);
-    let updatedAtDate = null;
-    if (route.updatedAt) {
-        if (typeof route.updatedAt.toDate === 'function') { // It's a Firestore Timestamp object from the SDK
-            updatedAtDate = route.updatedAt.toDate();
-        } else if (typeof route.updatedAt === 'object' && route.updatedAt._seconds !== undefined && route.updatedAt._nanoseconds !== undefined) { // It's a plain object representing a Timestamp
-            updatedAtDate = new Date(route.updatedAt._seconds * 1000 + route.updatedAt._nanoseconds / 1000000);
-        } else { // Assume it's already a valid date string or Date object
-            updatedAtDate = new Date(route.updatedAt);
-        }
+    const createdAtDate = route.createdAt; // Now guaranteed to be a Date object or null
+    const updatedAtDate = route.updatedAt; // Now guaranteed to be a Date object or null
+
+    // Atama durumunu belirle
+    let assignmentStatusHtml = '';
+    if (route.assignmentDate) {
+        assignmentStatusHtml = `<span class="badge bg-success ms-2">Gönderildi</span>`;
+    } else {
+        assignmentStatusHtml = `<span class="badge bg-danger ms-2">Gönderilmedi</span>`;
     }
 
     item.innerHTML = `
+        ${hashtagsHtml ? `<div class="mb-1">${hashtagsHtml}</div>` : ''}
         <div class="d-flex w-100 justify-content-between">
-            <h6 class="mb-1">${route.routeName}</h6>
-            <small>${createdAtDate.toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'})}</small>
+            <h5 class="mb-1">${route.routeName}</h5>
+            <small>
+                <span class="me-2">${assignmentStatusHtml}</span>
+            </small>
         </div>
         <p class="mb-1"><small>Şoför: ${route.driverId ? allDrivers.find(d => d.id === route.driverId)?.name || 'Bilinmiyor' : 'Bilinmiyor'}</small></p>
-        <p class="mb-1"><small>Oluşturulma: ${createdAtDate.toLocaleDateString('de-DE')} ${createdAtDate.toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'})}</small></p>
-        ${updatedAtDate && updatedAtDate.getTime() !== createdAtDate.getTime() ? `<p class="mb-1"><small>Son Güncelleme: ${updatedAtDate.toLocaleDateString('de-DE')} ${updatedAtDate.toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'})}</small></p>` : ''}
-        <div class="mb-2">
-            ${hashtagsHtml}
-        </div>
-        <div>
-            <button class="btn btn-sm btn-outline-info preview-route-btn me-2" data-id="${route.id}"><i class="bi bi-eye"></i> Önizle</button>
-            <button class="btn btn-sm btn-outline-primary edit-route-btn" data-id="${route.id}">Düzenle</button>
-            <button class="btn btn-sm btn-outline-danger delete-route-btn" data-id="${route.id}">Sil</button>
+        <p class="mb-1"><small>Oluşturulma: ${createdAtDate instanceof Date && !isNaN(createdAtDate.getTime()) ? createdAtDate.toLocaleDateString('de-DE') : '--.--.----'} ${createdAtDate instanceof Date && !isNaN(createdAtDate.getTime()) ? createdAtDate.toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'}) : '--:--'}</small></p>
+        ${updatedAtDate instanceof Date && !isNaN(updatedAtDate.getTime()) ? `<p class="mb-1"><small>Son Güncelleme: ${updatedAtDate.toLocaleDateString('de-DE')} ${updatedAtDate.toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'})}</small></p>` : ''}
+        <div class="d-flex justify-content-end mt-2">
+            <button class="btn btn-sm me-2 preview-route-btn" style="background-color: #5d8abc; border-color: #5d8abc; color: #fff;" data-id="${route.id}">Önizle</button>
+            <button class="btn btn-sm me-2 edit-route-btn" style="background-color: #c58300; border-color: #c58300; color: #fff;" data-id="${route.id}">Düzenle</button>
+            <button class="btn btn-sm btn-danger delete-route-btn" data-id="${route.id}">Sil</button>
         </div>
     `;
     item.querySelector('.preview-route-btn').addEventListener('click', handlePreviewRoute);

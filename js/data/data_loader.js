@@ -41,7 +41,19 @@ async function loadInitialData() {
         allMarkets = await marketsRes.json();
         allDrivers = await driversRes.json();
         allCities = await citiesRes.json();
-        allRoutes = await routesRes.json();
+        const routesData = await routesRes.json();
+        allRoutes = routesData.map(route => {
+            if (route.assignmentDate) {
+                route.assignmentDate = new Date(route.assignmentDate);
+            }
+            if (route.createdAt) {
+                route.createdAt = new Date(route.createdAt);
+            }
+            if (route.updatedAt) {
+                route.updatedAt = new Date(route.updatedAt);
+            }
+            return route;
+        });
         globalCustomFields = await customFieldsRes.json();
 
         // Veriler yüklendikten sonra UI elemanlarını doldur

@@ -213,9 +213,10 @@
             <!-- TUR PLANI PANELİ -->
             <div id="pane-pallets" class="split-pane">
                 <div id="tour-plan-view">
-                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                    <div class="d-flex align-items-center border-bottom pb-2 mb-3">
                         <h4 class="mb-0">Tur Planı</h4>
-                        <button id="print-tour-plan-button" class="btn btn-sm btn-primary"><i class="bi bi-printer-fill"></i> Yazdır</button>
+                        <button id="print-tour-plan-button" class="btn btn-sm btn-primary me-2 ms-auto"><i class="bi bi-printer-fill"></i> Yazdır</button>
+                        <button id="assign-tour-to-driver-button" class="btn btn-sm btn-success"><i class="bi bi-person-fill"></i> Şoföre Turu Gönder</button>
                     </div>
 
                     <div id="tour-plan-printable-area" class="p-2">
@@ -403,6 +404,33 @@
                     </div>
                 </div>
             </div>
+        <!-- Turu Şoföre Gönder Modalı -->
+        <div class="modal fade" id="assignTourModal" tabindex="-1" aria-labelledby="assignTourModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="assignTourModalLabel">Turu Şoföre Ata</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="assign-driver-select" class="form-label">Şoför Seçin</label>
+                            <select class="form-select" id="assign-driver-select">
+                                <!-- Şoförler buraya dinamik olarak yüklenecek -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="assignment-date-picker" class="form-label">Atama Tarihi</label>
+                            <input type="text" class="form-control" id="assignment-date-picker" placeholder="Tarih Seçin">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="button" class="btn btn-primary" id="confirm-assign-tour-button">Turu Ata</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         </main>
 
         <!-- Tur Önizleme Modalı -->
@@ -467,9 +495,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-                        <button type="button" class="btn btn-primary" id="print-preview-tour-plan-button"><i class="bi bi-printer-fill"></i> Yazdır</button>
+                    <div class="modal-footer" style="display: flex;">
+                        <button type="button" class="btn btn-secondary me-auto" data-bs-dismiss="modal">Kapat</button>
+                        <button type="button" class="btn btn-primary me-2 ms-auto" id="print-preview-tour-plan-button"><i class="bi bi-printer-fill"></i> Yazdır</button>
+                        <button type="button" class="btn btn-success" id="assign-preview-tour-button"><i class="bi bi-person-fill"></i> Şoföre Turu Gönder</button>
                     </div>
                 </div>
             </div>

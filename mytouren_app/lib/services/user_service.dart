@@ -35,4 +35,22 @@ class UserService {
   }
 
   // TODO: Kullanıcı profili oluşturma/güncelleme metodları eklenebilir.
+
+  Future<Map<String, dynamic>?> getDriverDetails(String firebaseAuthUid) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection('drivers')
+          .where('firebaseAuthUid', isEqualTo: firebaseAuthUid)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first.data();
+      }
+      return null; // Driver not found
+    } catch (e) {
+      debugPrint('Sürücü detayları alınırken hata: $e');
+      return null;
+    }
+  }
 }

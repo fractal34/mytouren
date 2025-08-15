@@ -253,6 +253,7 @@ function addEventListeners() {
 
     // Diğer
     document.getElementById('print-tour-plan-button').addEventListener('click', () => window.print());
+    document.getElementById('assign-tour-to-driver-button').addEventListener('click', showAssignTourModal);
 
     // Tur Önizleme Navigasyon Butonları
     const prevButton = document.getElementById('prev-tour-button');
